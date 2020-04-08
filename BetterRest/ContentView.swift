@@ -14,10 +14,7 @@ struct ContentView: View {
     @State private var sleepAmount = 8.0
     @State private var coffeeAmount = 1.0
 
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var isShowingAlert = false
-
+    //Computed using Model
     var suggestedBedtime: String {
 
         let model = SleepCalculator()
@@ -109,16 +106,6 @@ struct ContentView: View {
              --------------------------------------------- */
             }
             .navigationBarTitle("BetterRest")
-            .navigationBarItems(trailing:
-                //our button here
-                Button(action: calculateBedTime) {
-                    Text("Calculate")
-                }
-            )
-                .alert(isPresented: $isShowingAlert) {
-                    Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-            }
-
         }
     }
 
@@ -128,36 +115,6 @@ struct ContentView: View {
         components.hour  = 7
         components.minute = 0
         return Calendar.current.date(from: components) ?? Date()
-    }
-
-    func calculateBedTime() {
-        let model = SleepCalculator()
-
-        let components = Calendar.current.dateComponents([.hour, .minute], from: wakeUp)
-        let hour = (components.hour ?? 0) * 60 * 60
-        let minute = (components.minute ?? 0) * 60
-
-        do {
-            let prediction = try model.prediction(wake: Double(hour+minute), estimatedSleep: sleepAmount, coffee: coffeeAmount)
-
-            let sleepTime = wakeUp - prediction.actualSleep
-
-            //to convert to nicely readable time:
-            let formatter = DateFormatter()
-            formatter.timeStyle = .short
-
-            alertMessage = formatter.string(from: sleepTime)
-            alertTitle = "Your ideal bedtime is..."
-
-        } catch let err {
-
-            print("Error: \(err)")
-
-            alertTitle = "Error"
-            alertMessage = "Sorry but something went wrong when calculating your bedtime."
-        }
-
-        isShowingAlert = true //to trigger alert
     }
 }
 
