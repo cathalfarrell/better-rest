@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var wakeUp = defaultWakeTime
     @State private var sleepAmount = 8.0
     @State private var coffeeAmount = 1.0
+    @State private var coffeeAmountInt = 1
 
     //Computed using Model
     var suggestedBedtime: String {
@@ -24,8 +25,12 @@ struct ContentView: View {
         let minute = (components.minute ?? 0) * 60
 
         do {
+            /* // Using Stepper
             let prediction = try model.prediction(wake: Double(hour+minute), estimatedSleep: sleepAmount, coffee: coffeeAmount)
-
+            */
+            // Using Picker
+            let coffeeIntake = Double(coffeeAmountInt+1)
+            let prediction = try model.prediction(wake: Double(hour+minute), estimatedSleep: sleepAmount, coffee: coffeeIntake)
             let sleepTime = wakeUp - prediction.actualSleep
 
             //to convert to nicely readable time:
@@ -60,36 +65,16 @@ struct ContentView: View {
                 }
                 .font(.headline)
 
-                Section(header: Text("Daily coffee intake? - Stepper")){
-                    Stepper(value: $coffeeAmount, in: 1...20, step: 1){
-                        if coffeeAmount == 1{
-                            Text("1 cup")
-                        }else {
-                            Text("\(coffeeAmount, specifier: "%g") cups")
-                        }
-
-                    }
-                }
-                .font(.headline)
-
-                Section(header: Text("Suggested Bedtime")){
-                   Text(suggestedBedtime)
-                }
-                .font(.headline)
-
-
-                /* ------------------------------------------
-
                 /*
-                Challenge 2 - couldnt get this picker to work
+                Challenge 2 - Picker binding needs to be an Int
                 Replace the “Number of cups” stepper with a Picker showing the same range of values.
                 */
 
                 Section(header: Text("Daily coffee intake? - Picker")){
-                    Picker("Number of cups", selection: $coffeeAmount) {
-                        ForEach(1..<21) {
-                            if $0 > 1 {
-                                Text("\($0) cups")
+                    Picker("Number of cups", selection: $coffeeAmountInt) {
+                        ForEach(0..<20) {
+                            if $0 > 0 {
+                                Text("\($0+1) cups")
                             } else {
                                 Text("1 cup")
                             }
@@ -101,9 +86,10 @@ struct ContentView: View {
                 }
                 .font(.headline)
 
-                Text("You chose: Cups # \(coffeeAmount)")
-
-             --------------------------------------------- */
+                Section(header: Text("Suggested Bedtime")){
+                   Text(suggestedBedtime)
+                }
+                .font(.headline)
             }
             .navigationBarTitle("BetterRest")
         }
