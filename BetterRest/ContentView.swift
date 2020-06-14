@@ -34,6 +34,7 @@ struct ContentView: View {
                     Stepper(value: $sleepAmount, in: 4...12, step: 0.25){
                         Text("\(sleepAmount, specifier: "%g") hours")
                     }
+                    .accessibility(label: Text("\(sleepAmount, specifier: "%g") hours"))
                 }
 
                 VStack(alignment: .leading, spacing: 20.0) {
@@ -45,8 +46,8 @@ struct ContentView: View {
                         }else {
                             Text("\(coffeeAmount, specifier: "%g") cups")
                         }
-
                     }
+                    .accessibility(label: Text("\(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups")"))
                 }
 
             }
